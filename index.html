@@ -182,37 +182,18 @@
             ></div>
           </div>
 
-          <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
-            <i class="fas fa-history mr-2 text-blue-500"></i> Histórico
+          <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center justify-between history-header">
+            <div>
+              <i class="fas fa-history mr-2 text-blue-500"></i> Histórico
+            </div>
+            <!-- O botão de exportação será adicionado aqui pelo JavaScript -->
           </h3>
 
-          <div class="space-y-2 max-h-64 overflow-y-auto">
-            <div
-              class="p-2 bg-gray-50 rounded flex justify-between items-center"
-            >
-              <div>
-                <div class="text-sm font-medium">Amostra 1</div>
-                <div class="text-xs text-gray-500">540 nm</div>
-              </div>
-              <div class="text-blue-600 font-medium">0.324</div>
-            </div>
-            <div
-              class="p-2 bg-gray-50 rounded flex justify-between items-center"
-            >
-              <div>
-                <div class="text-sm font-medium">Amostra 2</div>
-                <div class="text-xs text-gray-500">540 nm</div>
-              </div>
-              <div class="text-blue-600 font-medium">0.587</div>
-            </div>
-            <div
-              class="p-2 bg-gray-50 rounded flex justify-between items-center"
-            >
-              <div>
-                <div class="text-sm font-medium">Blank</div>
-                <div class="text-xs text-gray-500">540 nm</div>
-              </div>
-              <div class="text-blue-600 font-medium">0.012</div>
+          <div class="space-y-2 max-h-64 overflow-y-auto" id="historyContainer">
+            <!-- O conteúdo será preenchido dinamicamente pelo JavaScript -->
+            <div class="text-center py-4 text-gray-500">
+              <i class="fas fa-history text-gray-300 text-2xl mb-2"></i>
+              <p class="text-sm">Nenhuma medição no histórico</p>
             </div>
           </div>
         </div>
@@ -223,5 +204,6 @@
     <script src="js/camera.js"></script>
     <script src="js/graph.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/history.js"></script>
   </body>
 </html>
