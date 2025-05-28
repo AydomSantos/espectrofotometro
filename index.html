@@ -1,158 +1,227 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Espectrofotômetro Web</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body class="bg-gray-100 min-h-screen">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body class="bg-gray-100 min-h-screen">
     <div class="container mx-auto px-4 py-8">
-        <header class="mb-8 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">Espectrofotômetro Web</h1>
-            <p class="text-gray-600">Medição de absorbância de amostras líquidas utilizando sua câmera</p>
-        </header>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Painel esquerdo - Controles -->
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-sliders-h mr-2 text-blue-500"></i> Controles
-                </h2>
-                
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Comprimento de onda (nm)</label>
-                    <input type="range" min="380" max="750" value="540" class="wavelength-selector" id="wavelengthSlider">
-                    <div class="flex justify-between text-xs text-gray-500 mt-1">
-                        <span>380</span>
-                        <span id="currentWavelength">540 nm</span>
-                        <span>750</span>
-                    </div>
-                </div>
-                
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de amostra</label>
-                    <select class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                        <option>Água</option>
-                        <option>Solução salina</option>
-                        <option>Proteína</option>
-                        <option>DNA/RNA</option>
-                        <option>Personalizado</option>
-                    </select>
-                </div>
-                
-                <div class="mb-6">
-                    <label class="block text-sm font-medium text-gray-700 mb-2">Concentração</label>
-                    <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500" placeholder="mg/mL" value="1.0">
-                </div>
-                
-                <button id="measureBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center transition duration-150">
-                    <i class="fas fa-play mr-2"></i> Medir absorbância
-                </button>
-                
-                <div class="mt-6 p-4 bg-blue-50 rounded-md">
-                    <h3 class="text-sm font-medium text-blue-800 mb-2">Dica de uso</h3>
-                    <p class="text-xs text-blue-700">Posicione a amostra na frente da câmera em uma área bem iluminada. Evite reflexos e sombras para melhores resultados.</p>
-                </div>
+      <header class="mb-8 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-blue-800 mb-2">
+          Espectrofotômetro Web
+        </h1>
+        <p class="text-gray-600">
+          Medição de absorbância de amostras líquidas utilizando sua câmera
+        </p>
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Painel esquerdo - Controles -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2
+            class="text-xl font-semibold text-gray-800 mb-4 flex items-center"
+          >
+            <i class="fas fa-sliders-h mr-2 text-blue-500"></i> Controles
+          </h2>
+
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Comprimento de onda (nm)</label
+            >
+            <input
+              type="range"
+              min="380"
+              max="750"
+              value="540"
+              class="wavelength-selector"
+              id="wavelengthSlider"
+            />
+            <div class="flex justify-between text-xs text-gray-500 mt-1">
+              <span>380</span>
+              <span id="currentWavelength">540 nm</span>
+              <span>750</span>
             </div>
-            
-            <!-- Painel central - Câmera e resultados -->
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-camera mr-2 text-blue-500"></i> Visualização
-                </h2>
-                
-                <div class="camera-container mb-4">
-                    <video id="cameraFeed" class="camera-feed" autoplay playsinline></video>
-                    <div id="targetArea" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-4 border-blue-400 rounded-full opacity-70 pointer-events-none"></div>
-                </div>
-                
-                <div class="flex justify-between items-center mb-4">
-                    <div>
-                        <span class="text-sm font-medium text-gray-700">Amostra atual:</span>
-                        <span id="currentSample" class="ml-2 font-medium">Nenhuma</span>
-                    </div>
-                    <button id="switchCameraBtn" class="text-sm text-blue-600 hover:text-blue-800 flex items-center">
-                        <i class="fas fa-sync-alt mr-1"></i> Trocar câmera
-                    </button>
-                </div>
-                
-                <div class="grid grid-cols-3 gap-2 mb-6">
-                    <div class="sample-well" data-sample="blank">
-                        <i class="fas fa-vial text-white"></i>
-                    </div>
-                    <div class="sample-well" data-sample="sample1">
-                        <span class="text-white">1</span>
-                    </div>
-                    <div class="sample-well" data-sample="sample2">
-                        <span class="text-white">2</span>
-                    </div>
-                </div>
-                
-                <div class="bg-gray-50 p-4 rounded-md">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="text-sm font-medium text-gray-700">Resultado:</span>
-                        <span id="absorbanceValue" class="text-xl font-bold text-blue-600">0.000</span>
-                    </div>
-                    <div class="text-xs text-gray-500">Absorbância @ <span id="resultWavelength">540</span> nm</div>
-                </div>
-            </div>
-            
-            <!-- Painel direito - Gráfico e histórico -->
-            <div class="bg-white rounded-xl shadow-md p-6">
-                <h2 class="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                    <i class="fas fa-chart-line mr-2 text-blue-500"></i> Espectro
-                </h2>
-                
-                <div class="absorbance-graph mb-4">
-                    <svg id="absorbanceGraph" class="graph-line" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-                </div>
-                
-                <div class="mb-4">
-                    <div class="flex justify-between text-xs text-gray-500 mb-1">
-                        <span>380 nm</span>
-                        <span>750 nm</span>
-                    </div>
-                    <div class="h-2 bg-gradient-to-r from-purple-800 via-blue-500 to-red-500 rounded-full"></div>
-                </div>
-                
-                <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
-                    <i class="fas fa-history mr-2 text-blue-500"></i> Histórico
-                </h3>
-                
-                <div class="space-y-2 max-h-64 overflow-y-auto">
-                    <div class="p-2 bg-gray-50 rounded flex justify-between items-center">
-                        <div>
-                            <div class="text-sm font-medium">Amostra 1</div>
-                            <div class="text-xs text-gray-500">540 nm</div>
-                        </div>
-                        <div class="text-blue-600 font-medium">0.324</div>
-                    </div>
-                    <div class="p-2 bg-gray-50 rounded flex justify-between items-center">
-                        <div>
-                            <div class="text-sm font-medium">Amostra 2</div>
-                            <div class="text-xs text-gray-500">540 nm</div>
-                        </div>
-                        <div class="text-blue-600 font-medium">0.587</div>
-                    </div>
-                    <div class="p-2 bg-gray-50 rounded flex justify-between items-center">
-                        <div>
-                            <div class="text-sm font-medium">Blank</div>
-                            <div class="text-xs text-gray-500">540 nm</div>
-                        </div>
-                        <div class="text-blue-600 font-medium">0.012</div>
-                    </div>
-                </div>
-            </div>
+          </div>
+
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Tipo de amostra</label
+            >
+            <select
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option>Água</option>
+              <option>Solução salina</option>
+              <option>Proteína</option>
+              <option>DNA/RNA</option>
+              <option>Personalizado</option>
+            </select>
+          </div>
+
+          <div class="mb-6">
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Concentração</label
+            >
+            <input
+              type="number"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="mg/mL"
+              value="1.0"
+            />
+          </div>
+
+          <button
+            id="measureBtn"
+            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md flex items-center justify-center transition duration-150"
+          >
+            <i class="fas fa-play mr-2"></i> Medir absorbância
+          </button>
+
+          <div class="mt-6 p-4 bg-blue-50 rounded-md">
+            <h3 class="text-sm font-medium text-blue-800 mb-2">Dica de uso</h3>
+            <p class="text-xs text-blue-700">
+              Posicione a amostra na frente da câmera em uma área bem iluminada.
+              Evite reflexos e sombras para melhores resultados.
+            </p>
+          </div>
         </div>
+
+        <!-- Painel central - Câmera e resultados -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2
+            class="text-xl font-semibold text-gray-800 mb-4 flex items-center"
+          >
+            <i class="fas fa-camera mr-2 text-blue-500"></i> Visualização
+          </h2>
+
+          <div class="camera-container mb-4">
+            <video
+              id="cameraFeed"
+              class="camera-feed"
+              autoplay
+              playsinline
+            ></video>
+            <div
+              id="targetArea"
+              class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 border-4 border-blue-400 rounded-full opacity-70 pointer-events-none"
+            ></div>
+          </div>
+
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <span class="text-sm font-medium text-gray-700"
+                >Amostra atual:</span
+              >
+              <span id="currentSample" class="ml-2 font-medium">Nenhuma</span>
+            </div>
+            <button
+              id="switchCameraBtn"
+              class="text-sm text-blue-600 hover:text-blue-800 flex items-center"
+            >
+              <i class="fas fa-sync-alt mr-1"></i> Trocar câmera
+            </button>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2 mb-6">
+            <div class="sample-well" data-sample="blank">
+              <i class="fas fa-vial text-white"></i>
+            </div>
+            <div class="sample-well" data-sample="sample1">
+              <span class="text-white">1</span>
+            </div>
+            <div class="sample-well" data-sample="sample2">
+              <span class="text-white">2</span>
+            </div>
+          </div>
+
+          <div class="bg-gray-50 p-4 rounded-md">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-700">Resultado:</span>
+              <span id="absorbanceValue" class="text-xl font-bold text-blue-600"
+                >0.000</span
+              >
+            </div>
+            <div class="text-xs text-gray-500">
+              Absorbância @ <span id="resultWavelength">540</span> nm
+            </div>
+          </div>
+        </div>
+
+        <!-- Painel direito - Gráfico e histórico -->
+        <div class="bg-white rounded-xl shadow-md p-6">
+          <h2
+            class="text-xl font-semibold text-gray-800 mb-4 flex items-center"
+          >
+            <i class="fas fa-chart-line mr-2 text-blue-500"></i> Espectro
+          </h2>
+
+          <div class="absorbance-graph mb-4">
+            <svg
+              id="absorbanceGraph"
+              class="graph-line"
+              viewBox="0 0 100 100"
+              preserveAspectRatio="none"
+            ></svg>
+          </div>
+
+          <div class="mb-4">
+            <div class="flex justify-between text-xs text-gray-500 mb-1">
+              <span>380 nm</span>
+              <span>750 nm</span>
+            </div>
+            <div
+              class="h-2 bg-gradient-to-r from-purple-800 via-blue-500 to-red-500 rounded-full"
+            ></div>
+          </div>
+
+          <h3 class="text-sm font-medium text-gray-700 mb-2 flex items-center">
+            <i class="fas fa-history mr-2 text-blue-500"></i> Histórico
+          </h3>
+
+          <div class="space-y-2 max-h-64 overflow-y-auto">
+            <div
+              class="p-2 bg-gray-50 rounded flex justify-between items-center"
+            >
+              <div>
+                <div class="text-sm font-medium">Amostra 1</div>
+                <div class="text-xs text-gray-500">540 nm</div>
+              </div>
+              <div class="text-blue-600 font-medium">0.324</div>
+            </div>
+            <div
+              class="p-2 bg-gray-50 rounded flex justify-between items-center"
+            >
+              <div>
+                <div class="text-sm font-medium">Amostra 2</div>
+                <div class="text-xs text-gray-500">540 nm</div>
+              </div>
+              <div class="text-blue-600 font-medium">0.587</div>
+            </div>
+            <div
+              class="p-2 bg-gray-50 rounded flex justify-between items-center"
+            >
+              <div>
+                <div class="text-sm font-medium">Blank</div>
+                <div class="text-xs text-gray-500">540 nm</div>
+              </div>
+              <div class="text-blue-600 font-medium">0.012</div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script src="js/wavelength.js"></script>
     <script src="js/camera.js"></script>
     <script src="js/graph.js"></script>
     <script src="js/main.js"></script>
-</body>
+  </body>
 </html>

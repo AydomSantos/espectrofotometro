@@ -119,6 +119,39 @@ O gráfico é implementado usando SVG para desenhar a curva de absorbância. O c
 - Atualização do gráfico com novos pontos de medição
 - Visualização do espectro completo de 380nm a 750nm
 
+## 🔬 Processamento de Imagem Real
+
+O Espectrofotômetro Web agora utiliza algoritmos reais de processamento de imagem para medir a absorbância das amostras. Esta implementação usa a biblioteca OpenCV.js para processar as imagens capturadas pela câmera.
+
+### Como Funciona
+
+1. **Captura de Imagem**: A imagem da câmera é capturada em tempo real.
+2. **Extração da Região de Interesse (ROI)**: Uma região circular no centro da imagem é extraída.
+3. **Conversão para Espaço de Cor HSV**: A imagem RGB é convertida para o espaço de cor HSV (Hue, Saturation, Value) para melhor análise de cores.
+4. **Cálculo de Valores Médios**: Os valores médios de H, S e V são calculados na região de interesse.
+5. **Conversão para Absorbância**: Os valores HSV são convertidos para absorbância usando uma aproximação da Lei de Beer-Lambert.
+6. **Correção de Iluminação**: A leitura do blank é usada para calibrar e corrigir variações de iluminação.
+
+### Algoritmos Implementados
+
+- **Segmentação de Imagem**: Isolamento da região de interesse usando máscaras circulares.
+- **Análise de Cor**: Extração de informações de cor usando o espaço HSV.
+- **Calibração**: Uso de amostras blank para calibração do zero.
+- **Correção de Iluminação**: Compensação para variações na iluminação ambiente.
+
+### Limitações
+
+- A precisão depende da qualidade da câmera e das condições de iluminação.
+- A calibração é simplificada e pode não ser tão precisa quanto um espectrofotômetro real.
+- Diferentes dispositivos podem produzir resultados ligeiramente diferentes devido às variações nas câmeras.
+
+### Melhorias Futuras
+
+- Implementação de algoritmos de machine learning para melhorar a precisão.
+- Calibração avançada usando curvas de referência.
+- Compensação automática para diferentes condições de iluminação.
+- Detecção automática de amostras e posicionamento.
+
 ## 🛠️ Personalização
 
 ### Adicionando Novos Tipos de Amostras
